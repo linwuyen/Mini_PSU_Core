@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>empty_sysconfig_cpu1</name>
 	<comment></comment>
@@ -24,21 +24,14 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>driverlib.lib</name>
-			<type>1</type>
-			<locationURI>COM_TI_C2000WARE_SOFTWARE_PACKAGE_INSTALL_DIR/driverlib/f2838x/driverlib/ccs/Debug/driverlib.lib</locationURI>
-		</link>
-	</linkedResources>
 	<variableList>
 		<variable>
 			<name>C2000WARE_DLIB_ROOT</name>
-			<value>$%7BCOM_TI_C2000WARE_SOFTWARE_PACKAGE_INSTALL_DIR%7D/driverlib/f2838x/driverlib</value>
+			<value>$%7BC2000WARE_ROOT%7D/driverlib/f2838x/driverlib</value>
 		</variable>
 		<variable>
 			<name>C2000WARE_ROOT</name>
-			<value>$%7BCOM_TI_C2000WARE_SOFTWARE_PACKAGE_INSTALL_DIR%7D</value>
+			<value>C:/ti/c2000/C2000Ware_6_00_01_00</value>
 		</variable>
 	</variableList>
 </projectDescription>

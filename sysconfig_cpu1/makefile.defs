@@ -1,0 +1,71 @@
+﻿################################################################################
+# User build additions. This file is included by generated CCS makefiles.
+################################################################################
+
+ASR_C2000WARE_ROOT := $(C2000WARE_ROOT)
+ifeq ($(wildcard $(ASR_C2000WARE_ROOT)/.metadata/sdk.json),)
+ASR_C2000WARE_ROOT := C:/ti/c2000/C2000Ware_6_00_01_00
+endif
+ASR_C2000WARE_DLIB_ROOT := $(ASR_C2000WARE_ROOT)/driverlib/f2838x/driverlib
+
+ASR_SYSCFG_OBJS := \
+./syscfg/board.obj \
+./syscfg/device.obj \
+./syscfg/c2000ware_libraries.obj
+
+ASR_LEGACY_DEVICE_OBJS := \
+./device/F2838x_CodeStartBranch.obj \
+./device/device.obj
+
+OBJS := $(filter-out $(ASR_LEGACY_DEVICE_OBJS),$(OBJS))
+OBJS__QUOTED := $(filter-out "device\F2838x_CodeStartBranch.obj" "device\device.obj",$(OBJS__QUOTED))
+ORDERED_OBJS := $(filter-out "./device/F2838x_CodeStartBranch.obj" "./device/device.obj",$(ORDERED_OBJS))
+ORDERED_OBJS := $(filter-out -l"/ti/c2000/C2000Ware_6_00_01_00/driverlib/f2838x/driverlib/ccs/Debug/driverlib.lib",$(ORDERED_OBJS))
+ORDERED_OBJS := $(filter-out -l"$(ASR_C2000WARE_DLIB_ROOT)/ccs/Debug/driverlib.lib",$(ORDERED_OBJS))
+ORDERED_OBJS += -l"$(ASR_C2000WARE_DLIB_ROOT)/ccs/Debug/driverlib.lib"
+
+ifeq ($(findstring ./syscfg/board.obj,$(OBJS)),)
+OBJS += ./syscfg/board.obj
+endif
+
+ifeq ($(findstring ./syscfg/c2000ware_libraries.obj,$(OBJS)),)
+OBJS += ./syscfg/c2000ware_libraries.obj
+endif
+
+ifeq ($(findstring ./syscfg/device.obj,$(OBJS)),)
+OBJS += ./syscfg/device.obj
+endif
+
+ifeq ($(findstring ./f2838x_codestartbranch.obj,$(OBJS)),)
+OBJS += ./f2838x_codestartbranch.obj
+endif
+
+ifeq ($(findstring ./syscfg/board.obj,$(ORDERED_OBJS)),)
+ORDERED_OBJS += "./syscfg/board.obj"
+endif
+
+ifeq ($(findstring ./syscfg/c2000ware_libraries.obj,$(ORDERED_OBJS)),)
+ORDERED_OBJS += "./syscfg/c2000ware_libraries.obj"
+endif
+
+ifeq ($(findstring ./syscfg/device.obj,$(ORDERED_OBJS)),)
+ORDERED_OBJS += "./syscfg/device.obj"
+endif
+
+ifeq ($(findstring ./f2838x_codestartbranch.obj,$(ORDERED_OBJS)),)
+ORDERED_OBJS += "./f2838x_codestartbranch.obj"
+
+f2838x_codestartbranch.obj: $(ASR_C2000WARE_ROOT)/device_support/f2838x/common/source/f2838x_codestartbranch.asm $(GEN_OPTS) | $(GEN_FILES) $(GEN_MISC_FILES)
+	@echo 'Building file: "$<"'
+	@echo 'Invoking: C2000 Compiler'
+	"$(CG_TOOL_ROOT)/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu64 --idiv_support=idiv0 --tmu_support=tmu0 --vcu_support=vcrc -Ooff --fp_mode=relaxed --include_path=".." --include_path="../device" --include_path="$(ASR_C2000WARE_DLIB_ROOT)" --include_path="$(CG_TOOL_ROOT)/include" --define=CPU1 --define=$(notdir $(CURDIR)) --define=DEBUG --diag_suppress=10063 --diag_warning=225 --diag_wrap=off --display_error_number --gen_func_subsections=on --abi=eabi --preproc_with_compile --preproc_dependency="f2838x_codestartbranch.d_raw" --include_path="./syscfg" $(GEN_OPTS__FLAG) "$<"
+	@echo 'Finished building: "$<"'
+	@echo ' '
+endif
+
+syscfg/%.obj: | $(GEN_MISC_FILES)
+	@echo 'Building file: "syscfg/$*.c"'
+	@echo 'Invoking: C2000 Compiler'
+	"$(CG_TOOL_ROOT)/bin/cl2000" -v28 -ml -mt --cla_support=cla2 --float_support=fpu64 --idiv_support=idiv0 --tmu_support=tmu0 --vcu_support=vcrc -Ooff --fp_mode=relaxed --include_path=".." --include_path="../device" --include_path="$(ASR_C2000WARE_DLIB_ROOT)" --include_path="$(CG_TOOL_ROOT)/include" --define=CPU1 --define=$(notdir $(CURDIR)) --define=DEBUG --diag_suppress=10063 --diag_warning=225 --diag_wrap=off --display_error_number --gen_func_subsections=on --abi=eabi --preproc_with_compile --preproc_dependency="syscfg/$*.d_raw" --include_path="./syscfg" --obj_directory="syscfg" $(GEN_OPTS__FLAG) "syscfg/$*.c"
+	@echo 'Finished building: "syscfg/$*.c"'
+	@echo ' '

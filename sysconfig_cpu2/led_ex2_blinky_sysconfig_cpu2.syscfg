@@ -1,4 +1,4 @@
-/**
+﻿/**
  * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
  * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
  * @cliArgs --device "F2838x" --part "F2838x_176pin" --package "176pin" --context "CPU2" --product "C2000WARE@6.00.01.00"
@@ -9,6 +9,7 @@
 /**
  * Import the modules used in this configuration.
  */
+const device_support = scripting.addModule("/driverlib/device_support.js");
 const ipc = scripting.addModule("/driverlib/ipc.js");
 
 /**
