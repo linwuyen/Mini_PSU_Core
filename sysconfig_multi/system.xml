@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<system>
+    <project configuration="FLASH" id="project_0" name="empty_sysconfig_cpu1"/>
+    <core id="C28xx_CPU1" project="project_0"/>
+    <project configuration="FLASH" id="project_1" name="empty_sysconfig_cpu2"/>
+    <core id="C28xx_CPU2" project="project_1"/>
+    <project configuration="CM_FLASH" id="project_2" name="empty_sysconfig_cm"/>
+    <core id="Cortex_M4_0" project="project_2"/>
+    <preBuildSteps/>
+    <postBuildSteps/>
+</system>
