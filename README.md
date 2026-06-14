@@ -1,46 +1,46 @@
 # Mini_PSU_Core
 
-Public portfolio repository for a Mini PSU control-firmware prototype.
+小型可程式電源控制韌體 prototype 的公開作品集 repository。
 
-This repository documents the architecture and development direction for a small programmable power-supply controller. It is useful as a power-electronics firmware portfolio project, but it is not a validated production release.
+此 repo 用於記錄小型 programmable power supply controller 的架構與開發方向。它適合作為 power-electronics firmware portfolio project，但不是已驗證的 production release。
 
-## Repository Role
+## 1. Repository 角色
 
-- **Purpose:** public portfolio repository for Mini PSU control-firmware architecture and development.
-- **Status:** public showcase and active prototype.
-- **Scope:** non-confidential power-control firmware structure, documented interfaces, and reproducible examples.
-- **Production status:** prototype/portfolio code; hardware use requires independent review, calibration, and protection validation.
+- **用途：** Mini PSU control-firmware architecture 與 development 的 public portfolio repository。
+- **狀態：** public showcase and active prototype。
+- **範圍：** 非機密 power-control firmware structure、documented interfaces、reproducible examples。
+- **正式產品狀態：** prototype / portfolio code；硬體使用前必須獨立 review、calibration、protection validation。
 
-## Project Goal
+## 2. Project goal
 
-Implement a digital-control programmable power supply with:
+目標是實作一個 digital-control programmable power supply，包含：
 
 - regulated output voltage and current
 - fast transient response target
-- over-voltage protection (OVP)
-- over-current protection (OCP)
-- over-temperature protection (OTP)
+- over-voltage protection，OVP
+- over-current protection，OCP
+- over-temperature protection，OTP
 - host communication for configuration and monitoring
 
-## Hardware Platform
+## 3. Hardware platform
 
-The current README history describes the intended platform as:
+目前 README 歷史描述的 intended platform：
 
-- **Control board:** Mini PSU Control Board V1.0 or compatible hardware.
-- **MCU family:** TI C2000 F28388D / F28377D class high-resolution PWM MCU.
+- **Control board：** Mini PSU Control Board V1.0 或 compatible hardware。
+- **MCU family：** TI C2000 F28388D / F28377D class high-resolution PWM MCU。
 
-## Power Topology
+## 4. Power topology
 
-Target topology direction:
+目標拓撲方向：
 
 - synchronous buck
 - bidirectional buck-boost candidate path
-- digital dual-loop control: outer voltage loop plus inner current loop
+- digital dual-loop control：outer voltage loop + inner current loop
 - HRPWM-based switching control
 
-## Firmware Architecture
+## 5. Firmware architecture
 
-The intended firmware architecture is foreground/background plus interrupt-driven real-time control:
+預期 firmware architecture 為 foreground/background + interrupt-driven real-time control：
 
 ```text
 High-speed ISR, 100 kHz+ target
@@ -57,28 +57,28 @@ Background / scheduled tasks
   - parameter storage
 ```
 
-## Build Guide
+## 6. Build guide
 
-1. Install Code Composer Studio v12 or newer.
-2. Install C2000Ware under the standard TI path when possible.
-3. Import the project through CCS.
-4. Select the intended build configuration:
-   - `RAM` for debug
-   - `FLASH` for standalone firmware image
-5. Build and verify the generated `.out` file.
+1. 安裝 Code Composer Studio v12 或更新版本。
+2. 儘量將 C2000Ware 安裝在標準 TI path。
+3. 透過 CCS import project。
+4. 選擇目標 build configuration：
+   - `RAM`：debug 用
+   - `FLASH`：standalone firmware image 用
+5. build 並確認產生 `.out` file。
 
-## Current Status
+## 7. Current status
 
-Current documented status:
+目前文件化狀態：
 
 - baseline clock / hardware configuration work exists
-- HRPWM and ADC baseline direction is documented
-- CCS project and build workflow are part of the repository intent
-- closed-loop control and physical-board validation remain future work
+- HRPWM 與 ADC baseline direction 已記錄
+- CCS project 與 build workflow 是此 repo 的核心用途之一
+- closed-loop control 與 physical-board validation 仍屬 future work
 
-## Safety Notes
+## 8. Safety notes
 
-This is power-electronics firmware. Do not run on hardware without reviewing:
+這是 power-electronics firmware。未 review 下列項目前，不要直接上實體硬體：
 
 - ADC scaling and calibration
 - PWM polarity and dead-time
@@ -88,10 +88,10 @@ This is power-electronics firmware. Do not run on hardware without reviewing:
 - OVP / OCP / OTP limits
 - load and supply boundaries
 
-## Working Rules
+## 9. Working rules
 
-1. Keep public content non-confidential.
-2. Mark unverified hardware behavior clearly.
-3. Do not present prototype code as production-ready.
-4. Keep generated build output out of version control.
-5. Document board version, toolchain, and test conditions for each hardware result.
+1. public content 必須保持 non-confidential。
+2. 未驗證硬體行為要明確標示。
+3. 不要把 prototype code 描述成 production-ready。
+4. generated build output 不進 version control。
+5. 每個 hardware result 都要記錄 board version、toolchain、test conditions。
