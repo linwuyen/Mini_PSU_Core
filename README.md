@@ -45,3 +45,13 @@
 - [ ] 整合上位機 Modbus 通訊通訊協定。
 - [ ] 進行硬體過載與瞬態響應極限測試。
 - [ ] 撰寫詳細的硬體校準與補償指南。
+
+
+---
+
+## Repository Classification
+
+- **Purpose:** public portfolio repository for Mini PSU control-firmware architecture and development.
+- **Status:** public showcase and active prototype.
+- **Scope:** non-confidential power-control firmware structure, documented interfaces, and reproducible examples.
+- **Production status:** prototype/portfolio code; hardware use requires independent review, calibration, and protection validation.
