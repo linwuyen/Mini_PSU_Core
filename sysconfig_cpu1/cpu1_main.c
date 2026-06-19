@@ -19,6 +19,10 @@ void main(void)
     Device_init();
 
     //
+    // Boot CPU2 and CM cores (guarded for v0.1-A)
+    //
+#ifdef ENABLE_MULTICORE_BOOT
+    //
     // Boot CPU2 core
     //
     Device_bootCPU2(BOOT_MODE_CPU2);
@@ -31,21 +35,12 @@ void main(void)
 #else
     Device_bootCM(BOOTMODE_BOOT_TO_S0RAM);
 #endif
+#endif // ENABLE_MULTICORE_BOOT
 
     //
     // Initialize GPIO
     //
     Device_initGPIO();
-
-    //
-    // Initialize settings from SysConfig
-    //
-    Board_init();
-
-    //
-    // Enable Time-Base Clock (TBCLK) to start all configured ePWM counters
-    //
-    SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_TBCLKSYNC);
 
     //
     // Initialize PIE and clear PIE registers. Disables CPU interrupts.
@@ -57,6 +52,16 @@ void main(void)
     // Service Routines (ISR).
     //
     Interrupt_initVectorTable();
+
+    //
+    // Initialize settings from SysConfig
+    //
+    Board_init();
+
+    //
+    // Enable Time-Base Clock (TBCLK) to start all configured ePWM counters
+    //
+    SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_TBCLKSYNC);
 
     //
     // Enable Global Interrupt (INTM) and realtime interrupt (DBGM)

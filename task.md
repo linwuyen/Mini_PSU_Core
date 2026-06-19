@@ -1,0 +1,5 @@
+- [x] Configure `CPU1_LED` and `CPU2_LED` pins in `led_ex2_blinky_sysconfig_cpu1.syscfg` to avoid conflicts
+- [x] Configure `EPWM1` module in `led_ex2_blinky_sysconfig_cpu1.syscfg` (100 kHz, 50% duty, Up-count)
+- [x] Configure `PWM_BUFFER_EN` on `GPIO99` in `led_ex2_blinky_sysconfig_cpu1.syscfg` (output, initial value low)
+- [x] Call `SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_TBCLKSYNC)` in `cpu1_main.c` after `Board_init()`
+- [x] Import and build `empty_sysconfig_cpu1` project to verify compilation passes
