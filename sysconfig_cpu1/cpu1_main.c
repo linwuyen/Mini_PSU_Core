@@ -43,6 +43,11 @@ void main(void)
     Board_init();
 
     //
+    // Enable Time-Base Clock (TBCLK) to start all configured ePWM counters
+    //
+    SysCtl_enablePeripheral(SYSCTL_PERIPH_CLK_TBCLKSYNC);
+
+    //
     // Initialize PIE and clear PIE registers. Disables CPU interrupts.
     //
     Interrupt_initModule();
