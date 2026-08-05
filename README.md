@@ -1,97 +1,102 @@
 # Mini_PSU_Core
 
-小型可程式電源控制韌體 prototype 的公開作品集 repository。
+公開、非機密的 C2000 digital-power control firmware portfolio prototype。
 
-此 repo 用於記錄小型 programmable power supply controller 的架構與開發方向。它適合作為 power-electronics firmware portfolio project，但不是已驗證的 production release。
+這個 repository 的目標是建立一條可重現、可量測、可審查的控制證據鏈；它不是 production firmware，也不聲稱目前已完成閉迴路 power-stage qualification。
 
-## 1. Repository 角色
-
-- **用途：** Mini PSU control-firmware architecture 與 development 的 public portfolio repository。
-- **狀態：** public showcase and active prototype。
-- **範圍：** 非機密 power-control firmware structure、documented interfaces、reproducible examples。
-- **正式產品狀態：** prototype / portfolio code；硬體使用前必須獨立 review、calibration、protection validation。
-
-## 2. Project goal
-
-目標是實作一個 digital-control programmable power supply，包含：
-
-- regulated output voltage and current
-- fast transient response target
-- over-voltage protection，OVP
-- over-current protection，OCP
-- over-temperature protection，OTP
-- host communication for configuration and monitoring
-
-## 3. Hardware platform
-
-目前 README 歷史描述的 intended platform：
-
-- **Control board：** Mini PSU Control Board V1.0 或 compatible hardware。
-- **MCU family：** TI C2000 F28388D / F28377D class high-resolution PWM MCU。
-
-## 4. Power topology
-
-目標拓撲方向：
-
-- synchronous buck
-- bidirectional buck-boost candidate path
-- digital dual-loop control：outer voltage loop + inner current loop
-- HRPWM-based switching control
-
-## 5. Firmware architecture
-
-預期 firmware architecture 為 foreground/background + interrupt-driven real-time control：
+## Portfolio signal
 
 ```text
-High-speed ISR, 100 kHz+ target
-  - ADC conversion handling
-  - 2P2Z / PID control calculation
-  - HRPWM duty update
-  - fast protection checks
-
-Background / scheduled tasks
-  - system state machine
-  - LED/status reporting
-  - thermal monitoring and fan control
-  - host communication
-  - parameter storage
+ePWM 100 kHz-class timing
+        ↓ SOCA
+ADC synchronous sampling
+        ↓
+real-time ISR and control calculation
+        ↓
+ePWM compare update
+        ↓
+CMPSS / XBAR / Trip-Zone shutdown
 ```
 
-## 6. Build guide
+第一個公開 vertical reference 位於 [`portfolio_demo/`](portfolio_demo/)。它包含：
 
-1. 安裝 Code Composer Studio v12 或更新版本。
-2. 儘量將 C2000Ware 安裝在標準 TI path。
-3. 透過 CCS import project。
-4. 選擇目標 build configuration：
-   - `RAM`：debug 用
-   - `FLASH`：standalone firmware image 用
-5. build 並確認產生 `.out` file。
+- portable C control/reference implementation；
+- deterministic host tests；
+- Q15 duty clamp 與 fault latch；
+- C2000 SysConfig/DriverLib integration skeleton；
+- GitHub Actions host validation；
+- bench procedure 與 evidence template。
 
-## 7. Current status
+## Current evidence
 
-目前文件化狀態：
+| Evidence layer | Status |
+|---|---|
+| Portable control logic | Executable host reference; exact PR CI decides PASS/FAIL |
+| C2000 integration | Public-safe skeleton |
+| CPU clean build | Not claimed for the new reference |
+| Program / flash | Not claimed |
+| Oscilloscope / logic analyzer | Not claimed |
+| Power-stage closed loop | Future work |
+| Production qualification | Not claimed |
 
-- baseline clock / hardware configuration work exists
-- HRPWM 與 ADC baseline direction 已記錄
-- CCS project 與 build workflow 是此 repo 的核心用途之一
-- closed-loop control 與 physical-board validation 仍屬 future work
+No waveform image or board result should be added without the exact source commit, build configuration, programmed artifact SHA-256, board revision, instrument setup, acceptance limit, and PASS/FAIL disposition.
 
-## 8. Safety notes
+## Intended platform
 
-這是 power-electronics firmware。未 review 下列項目前，不要直接上實體硬體：
+- TI C2000 F2838x / F2837x class MCU
+- synchronous buck or bidirectional buck-boost learning path
+- outer voltage loop plus inner current loop candidate architecture
+- 100 kHz+ real-time ISR target
+- ADC, 2P2Z/PID, HRPWM, OVP/OCP/OTP, and explicit safe startup/shutdown
 
-- ADC scaling and calibration
-- PWM polarity and dead-time
-- current-sense polarity
-- fault-trip configuration
-- startup and shutdown state machine
-- OVP / OCP / OTP limits
-- load and supply boundaries
+The actual public demo is intentionally smaller than this target architecture so each claim can be verified independently.
 
-## 9. Working rules
+## Run the host reference
 
-1. public content 必須保持 non-confidential。
-2. 未驗證硬體行為要明確標示。
-3. 不要把 prototype code 描述成 production-ready。
-4. generated build output 不進 version control。
-5. 每個 hardware result 都要記錄 board version、toolchain、test conditions。
+```text
+cd portfolio_demo
+make test
+```
+
+The host test verifies event ordering, signed feedback direction, duty saturation, external/overcurrent trip latching, and explicit trip clearing. It does **not** prove C2000 timing, analog scaling, comparator polarity, power-stage stability, or safe hardware operation.
+
+## Bench milestone
+
+The next retained hardware result should use one exact commit and complete this sequence:
+
+1. PWM frequency, duty, polarity, and dead-time.
+2. ePWM SOCA → ADC SOC → ADC ISR timing.
+3. ISR execution width and jitter using a GPIO marker.
+4. Safe control-direction test with loopback or signal-generator input.
+5. CMPSS/Trip-Zone or reviewed fault-injection shutdown latency.
+
+Template: [`portfolio_demo/evidence/bench-result-template.md`](portfolio_demo/evidence/bench-result-template.md).
+
+## Build guide for existing CCS projects
+
+1. Install the required Code Composer Studio and C2000Ware versions for the project being imported.
+2. Import the intended CPU project only; do not assume generated and legacy device-support files can be compiled together.
+3. Select `RAM` for debugger bring-up or `FLASH` for standalone image generation.
+4. Clean and build from a known workspace.
+5. Retain the exact commit, build configuration, `.out` path, timestamp, and SHA-256.
+
+## Safety boundary
+
+Before enabling a real power stage, independently verify:
+
+- ADC gain, offset, units, saturation, and current-sense polarity;
+- PWM pin, polarity, time-base, compare limits, and dead-time;
+- gate-driver and power-stage safe state;
+- CMPSS/XBAR/Trip-Zone route and latch/clear behavior;
+- startup, shutdown, relay, fan, and thermal policy;
+- OVP/OCP/OTP limits against component and load boundaries;
+- ISR worst-case execution time and interrupt interaction;
+- control-loop design and stability.
+
+## Working rules
+
+1. Public content must remain non-confidential.
+2. Unverified behavior is labeled `NOT RUN`, `BLOCKED`, or `NOT CLAIMED` rather than implied PASS.
+3. Generated build output is not committed.
+4. Every hardware result identifies board, toolchain, exact source, artifact hash, stimulus, expected result, measured result, tolerance, and limitation.
+5. AI or static source review cannot replace clean build, programmed artifact, and board evidence.
