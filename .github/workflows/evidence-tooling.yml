@@ -1,0 +1,41 @@
+name: Evidence Tooling
+
+on:
+  push:
+    paths:
+      - "portfolio_demo/evidence/*.ps1"
+      - ".github/workflows/evidence-tooling.yml"
+  pull_request:
+    paths:
+      - "portfolio_demo/evidence/*.ps1"
+      - ".github/workflows/evidence-tooling.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  powershell-51-syntax:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse evidence scripts with Windows PowerShell
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $scripts = Get-ChildItem -LiteralPath "portfolio_demo/evidence" -Filter "*.ps1" -File
+          if ($scripts.Count -eq 0) {
+              throw "No evidence PowerShell scripts were found."
+          }
+          foreach ($script in $scripts) {
+              $tokens = $null
+              $parseErrors = $null
+              [System.Management.Automation.Language.Parser]::ParseFile(
+                  $script.FullName,
+                  [ref]$tokens,
+                  [ref]$parseErrors) | Out-Null
+              if ($parseErrors.Count -ne 0) {
+                  $messages = $parseErrors | ForEach-Object { $_.Message }
+                  throw "PowerShell parse failure in $($script.FullName):`n$($messages -join [Environment]::NewLine)"
+              }
+              Write-Host "PASS: $($script.Name)"
+          }
