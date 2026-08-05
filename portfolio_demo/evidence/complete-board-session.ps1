@@ -79,8 +79,8 @@ $artifactRelative = $artifactResolved
 if ($artifactResolved.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
     $artifactRelative = $artifactResolved.Substring($repoRoot.Length + 1).Replace("\", "/")
 }
-$resultText = $resultText -replace '(?m)^- Programmed artifact path:.*$', ("- Programmed artifact path: `{0}`" -f $artifactRelative)
-$resultText = $resultText -replace '(?m)^- Programmed artifact SHA-256:.*$', ("- Programmed artifact SHA-256: `{0}`" -f $artifactRecord.SHA256)
+$resultText = $resultText -replace '(?m)^- Programmed artifact path:.*$', ("- Programmed artifact path: {0}" -f $artifactRelative)
+$resultText = $resultText -replace '(?m)^- Programmed artifact SHA-256:.*$', ("- Programmed artifact SHA-256: {0}" -f $artifactRecord.SHA256)
 if (-not [string]::IsNullOrWhiteSpace($BuildConfiguration)) {
     $resultText = $resultText -replace '(?m)^- Build configuration:.*$', ("- Build configuration: {0}" -f $BuildConfiguration)
 }
@@ -97,7 +97,7 @@ foreach ($record in $records) {
     if ($displayPath.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
         $displayPath = $displayPath.Substring($repoRoot.Length + 1).Replace("\", "/")
     }
-    $evidenceRows.Add(("| `{0}` | {1} | `{2}` |" -f $displayPath, $record.Purpose, $record.SHA256))
+    $evidenceRows.Add(("| {0} | {1} | {2} |" -f $displayPath, $record.Purpose, $record.SHA256))
 }
 $evidenceBlock = "| File | Purpose | SHA-256 |`r`n|---|---|---|`r`n" + ($evidenceRows -join "`r`n")
 $resultText = [regex]::Replace(
