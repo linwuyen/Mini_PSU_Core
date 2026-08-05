@@ -63,9 +63,9 @@ try {
     }
 
     $resultText = Get-Content -LiteralPath $templatePath -Raw
-    $resultText = $resultText -replace '# Bench result — `<test-id>`', ("# Bench result — `{0}`" -f $ResultId)
-    $resultText = $resultText -replace '(?m)^- Exact commit:.*$', ("- Exact commit: `{0}`" -f $sourceCommit)
-    $resultText = $resultText -replace '(?m)^- Branch / PR:.*$', ("- Branch / PR: `{0}`" -f $BranchName)
+    $resultText = $resultText -replace '# Bench result — `<test-id>`', ("# Bench result — {0}" -f $ResultId)
+    $resultText = $resultText -replace '(?m)^- Exact commit:.*$', ("- Exact commit: {0}" -f $sourceCommit)
+    $resultText = $resultText -replace '(?m)^- Branch / PR:.*$', ("- Branch / PR: {0}" -f $BranchName)
     $resultText = $resultText -replace '(?m)^- Date and timezone:.*$', ("- Date and timezone: {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm zzz"))
     $resultText = $resultText -replace '(?m)^- Engineer:.*$', '- Engineer: linwuyen'
     $resultText = $resultText -replace '(?m)^- Board and revision:.*$', ("- Board and revision: {0}" -f $Board)
