@@ -44,13 +44,26 @@ static void testNominalControl(void)
 
 static void testDutyClamp(void)
 {
-    MiniPsuDemoState state;
-    MiniPsuDemoConfig config = defaultConfig();
-    config.proportional_gain_q15 = 32767;
+    MiniPsuDemoState highState;
+    MiniPsuDemoState lowState;
+    MiniPsuDemoConfig highConfig = defaultConfig();
+    MiniPsuDemoConfig lowConfig = defaultConfig();
 
-    assert(MiniPsuDemo_init(&state, &config));
-    assert(MiniPsuDemo_runControlCycle(&state, 0U, false) == config.maximum_duty_q15);
-    assert(MiniPsuDemo_runControlCycle(&state, 3400U, false) == config.minimum_duty_q15);
+    highConfig.proportional_gain_q15 = 32767;
+    highConfig.nominal_duty_q15 = 29500U;
+    assert(MiniPsuDemo_init(&highState, &highConfig));
+    assert(
+        MiniPsuDemo_runControlCycle(&highState, 0U, false) ==
+        highConfig.maximum_duty_q15);
+    assertNormalTrace(&highState);
+
+    lowConfig.proportional_gain_q15 = 32767;
+    lowConfig.nominal_duty_q15 = 1500U;
+    assert(MiniPsuDemo_init(&lowState, &lowConfig));
+    assert(
+        MiniPsuDemo_runControlCycle(&lowState, 3400U, false) ==
+        lowConfig.minimum_duty_q15);
+    assertNormalTrace(&lowState);
 }
 
 static void testTripLatchAndAuthorizedClear(void)
