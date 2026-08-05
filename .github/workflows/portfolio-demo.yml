@@ -1,0 +1,17 @@
+name: Portfolio Demo
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  host-reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run vertical reference
+        working-directory: portfolio_demo
+        run: make test
