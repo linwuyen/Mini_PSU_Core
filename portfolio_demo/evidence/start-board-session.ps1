@@ -35,13 +35,13 @@ try {
     $sourceBranch = (Invoke-Git -GitArguments @("rev-parse", "--abbrev-ref", "HEAD")).Trim()
 
     if ([string]::IsNullOrWhiteSpace($ResultId)) {
-        $ResultId = "{0}-f28388d" -f (Get-Date -Format "yyyyMMdd-HHmm")
+        $ResultId = (Get-Date -Format "yyyyMMdd-HHmm") + "-f28388d"
     }
     if ([string]::IsNullOrWhiteSpace($BranchName)) {
-        $BranchName = "board/$ResultId"
+        $BranchName = "board/" + $ResultId
     }
 
-    & git show-ref --verify --quiet "refs/heads/$BranchName"
+    & git show-ref --verify --quiet ("refs/heads/" + $BranchName)
     if ($LASTEXITCODE -eq 0) {
         throw "Local branch '$BranchName' already exists. Choose another -BranchName or -ResultId."
     }
@@ -63,13 +63,18 @@ try {
     }
 
     $resultText = Get-Content -LiteralPath $templatePath -Raw
-    $resultText = $resultText -replace '# Bench result — `<test-id>`', ("# Bench result — {0}" -f $ResultId)
-    $resultText = $resultText -replace '(?m)^- Exact commit:.*$', ("- Exact commit: {0}" -f $sourceCommit)
-    $resultText = $resultText -replace '(?m)^- Branch / PR:.*$', ("- Branch / PR: {0}" -f $BranchName)
-    $resultText = $resultText -replace '(?m)^- Date and timezone:.*$', ("- Date and timezone: {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm zzz"))
+    $resultLines = $resultText -split "\r?\n"
+    if ($resultLines.Count -eq 0) {
+        throw "Evidence template is empty: $templatePath"
+    }
+    $resultLines[0] = "# Bench result - " + $ResultId
+    $resultText = $resultLines -join [Environment]::NewLine
+    $resultText = $resultText -replace '(?m)^- Exact commit:.*$', ("- Exact commit: " + $sourceCommit)
+    $resultText = $resultText -replace '(?m)^- Branch / PR:.*$', ("- Branch / PR: " + $BranchName)
+    $resultText = $resultText -replace '(?m)^- Date and timezone:.*$', ("- Date and timezone: " + (Get-Date -Format "yyyy-MM-dd HH:mm zzz"))
     $resultText = $resultText -replace '(?m)^- Engineer:.*$', '- Engineer: linwuyen'
-    $resultText = $resultText -replace '(?m)^- Board and revision:.*$', ("- Board and revision: {0}" -f $Board)
-    $resultText = $resultText -replace '(?m)^- MCU and package:.*$', ("- MCU and package: {0}" -f $Mcu)
+    $resultText = $resultText -replace '(?m)^- Board and revision:.*$', ("- Board and revision: " + $Board)
+    $resultText = $resultText -replace '(?m)^- MCU and package:.*$', ("- MCU and package: " + $Mcu)
 
     $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     [System.IO.File]::WriteAllText($resultPath, $resultText, $utf8NoBom)
